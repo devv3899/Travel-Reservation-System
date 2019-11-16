@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<title>Flights User Dashboard</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet"
+		href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+	<script
+		src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+	<script
+		src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+	</head>
+<body>
+	<style>
+		.jumbotron {
+			padding: 20px !important;
+		}
+	</style>
+
+	<div class="jumbotron text-center">
+		<h2>Welcome</h2>
+		<button class="btn btn-danger" id="logOffBtn" style="float:right; position: absolute; right: 30px; top:30px;">LogOff</button>
+	</div>
+
+	<div class="container">
+		<div class="card-body text-center">
+			<div class="form-group row">
+				<label class="col-form-label">Welcome ${USER_NAME}</label>
+			</div>
+		</div>
+	</div>
+
+	<script>
+		function logOff(sessionId) {
+			var dataObj = {};			
+			dataObj.sessionId = sessionId;
+			
+			$.ajax({
+				   type: "POST",
+				   url: 'logOffUser',
+		           dataType: "json",
+		           contentType: "application/json;charset=utf-8",
+				   data: JSON.stringify(dataObj),
+				   success: function(data){
+					   
+					   if(data.success) {
+						   alert('You have logged off successfully.');
+						   document.location.href="login";
+					   } else {
+						   alert(data.reason);
+					   }
+				   },
+				   error: function(data) {
+					   console.log(data);
+					   alert('Request failed');
+				   }
+			 });
+		}
+		
+		$( document ).ready(function() {
+			
+			 var sessionId = undefined;			
+			 var cookiearray = document.cookie.split(';');
+             
+             for(var i=0; i<cookiearray.length; i++) {
+                name = cookiearray[i].split('=')[0];
+                value = cookiearray[i].split('=')[1];
+                
+                if(name == 'SESSION_ID') {
+                	sessionId = value;
+                }
+             }
+             
+			$('#logOffBtn').click(function() {
+				logOff(sessionId);
+                var now = new Date();
+                now.setMonth( now.getMonth() - 1 );
+                document.cookie = "SESSION_ID=" + sessionId;
+                document.cookie = "expires=" + now.toUTCString() + ";";
+			});
+		});
+			
+
+	</script>
+</body>
+</html>

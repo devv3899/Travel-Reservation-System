@@ -1,0 +1,36 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: AWS Flights Project
+Globals:
+  Api:
+    EndpointConfiguration: REGIONAL
+Resources:
+  MyServiceFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Role: arn:aws:iam::457536967961:role/lambda-vpc-execution-role
+      Handler: com.flights.handler.StreamLambdaHandler::handleRequest
+      Runtime: java8
+      CodeUri: s3://devflights/8f834443da8ad0fe61bc728a3040dd8d
+      MemorySize: 512
+      Policies: AWSLambdaBasicExecutionRole
+      Timeout: 15
+      Events:
+        GetResource:
+          Type: Api
+          Properties:
+            Path: /{proxy+}
+            Method: any
+Outputs:
+  MyServiceApi:
+    Description: URL for application
+    Value:
+      Fn::Sub: https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/ping
+    Export:
+      Name: MyServiceApi
+  UsersApi:
+    Description: Get Response for a user
+    Value:
+      Fn::Sub: https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/user
+    Export:
+      Name: UsersApi
